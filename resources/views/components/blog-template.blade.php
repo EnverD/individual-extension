@@ -24,14 +24,22 @@
     </div>
     
     <div class="b-2">
+        <PostVote />
         <!-- 'slug' is the one in the route and gets its value from '$subpage_slug '. The '$subpage_slug' value is being transfered from the parrent blade via the props at the top. -->
         <form method="POST" action="{{ route('posts.like.toggle', ['slug' => $subpage_slug, 'postSlug' => $post_slug]) }}"> 
             @csrf
             <x-secondary-button type="submit" class="button-space {{ $post->isLikedByUser(Auth::user()) ? 'liked' : 'not-liked' }}">
-                {{ $post->likes->count() }} {{ __('Like') }}
+                {{ $post->likes->count() }} {{ __('UpVote') }}
             </x-secondary-button>
-        </form>
 
+            <form method="POST" action="{{ route('posts.toggleDislike', ['slug' => $subpage_slug, 'post_slug' => $post_slug]) }}">
+    @csrf
+    <input type="hidden" name="_method" value="POST"> <!-- Using a hidden input to specify the HTTP method -->
+    <x-secondary-button type="submit" class="button-space {{ $post->isDislikedByUser(Auth::user()) ? 'disliked' : 'not-disliked' }}">
+        {{ $post->dislikes->count() }} {{ __('Dislike') }}
+    </x-secondary-button>
+
+        </form>
 
         <!-- Show/Hide Comment Section -->
         <x-secondary-button class="button-space blog-comment-btn" type="button" data-post-id="{{ $post->id }}">
@@ -78,5 +86,47 @@
        @endforeach
    </div>
 </div>
+
+
+<div id="posts-container">
+    
+</div>
+
+
+<button id="load-more-btn">Load More</button>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    var offset = 0; // Initial offset
+    
+    $('#load-more-btn').click(function() {
+        $.ajax({
+            url: "{{ route('load.more.posts') }}",
+            type: "GET",
+            data: { offset: offset },
+            success: function(response) {
+                var posts = response.posts;
+                if (posts.length > 0) {
+                    // Append new posts to the container
+                    posts.forEach(function(post) {
+                        $('#posts-container').append('<div>' + post.title + '</div>');
+                    });
+                    offset += 5;
+                } else {
+                    $('#load-more-btn').hide();
+                }
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText); // Log error response
+            }
+        });
+    });
+});
+</script>
+
+
 
 

@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+//Upvote and Downvote
+Route::post('/items/{item_id}/upvote', 'VoteController@upvote');
+Route::post('/items/{item_id}/downvote', 'VoteController@downvote');
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

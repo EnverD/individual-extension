@@ -42,6 +42,17 @@ class Post extends Model
         return $this->likes->contains('user_id', $user->id);
     }
 
+    public function isDislikedByUser($user)
+    {
+        // Assuming you have a relationship defined between Post and Dislikes
+        return $this->dislikes()->where('user_id', $user->id)->exists();
+    }
+
+    public function dislikes()
+    {
+        return $this->hasMany(Dislike::class); // Assuming Dislike is your dislike model
+    }
+
     public function subpage() {
         return $this->belongsTo(Subpage::class);
     }

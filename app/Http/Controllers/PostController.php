@@ -69,6 +69,35 @@ class PostController extends Controller
         return back();
     }
 
+    public function toggleDislike($slug, $post_slug)
+    {
+        // Get the post and toggle the dislike
+        // Check if the user already disliked this post
+        $dislike = $post->dislikes()->where('user_id', auth()->id())->first();
+    
+        if ($dislike) {
+            $dislike->delete(); // Remove the dislike if it exists
+        } else {
+            // Add a dislike if it doesn't exist
+            $post->dislikes()->create(['user_id' => auth()->id()]);
+    
+            // Remove the like (upvote) if it exists
+            $like = $post->likes()->where('user_id', auth()->id())->first();
+            if ($like) {
+                $like->delete();
+            }
+        }
+    
+        return back(); // Redirect back to the previous page
+    }
+
+    public function loadMore(Request $request) {
+        $offset = $request->get('offset'); // Get the offset parameter
+        $posts = Post::skip($offset)->take(5)->get(); // Fetch posts
+        
+        return response()->json(['posts' => $posts]);
+    }
+    
     
     public function destroy($slug, $postSlug)
     {

@@ -1,0 +1,40 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Item; // Replace Item with your model
+use App\Models\Vote;
+
+class VoteController extends Controller
+{
+    public function upvote($id)
+    {
+        $item = Item::findOrFail($id); // Replace Item with your model
+        $vote = Vote::updateOrCreate(
+            [
+                'user_id' => auth()->id(),
+                'votable_id' => $item->id,
+                'votable_type' => get_class($item),
+            ],
+            ['vote' => 1]
+        );
+
+        return response()->json(['message' => 'Upvoted successfully']);
+    }
+
+    public function downvote($id)
+    {
+        $item = Item::findOrFail($id); // Replace Item with your model
+        $vote = Vote::updateOrCreate(
+            [
+                'user_id' => auth()->id(),
+                'votable_id' => $item->id,
+                'votable_type' => get_class($item),
+            ],
+            ['vote' => -1]
+        );
+
+        return response()->json(['message' => 'Downvoted successfully']);
+    }
+}

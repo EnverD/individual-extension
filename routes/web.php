@@ -44,6 +44,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'profile'])->name('profile.profile');
 });
 
+//Upvote and Downvote
+Route::post('/items/{item_id}/upvote', 'VoteController@upvote');
+Route::post('/items/{item_id}/downvote', 'VoteController@downvote');
 
 
 // Middleware for all the routes
@@ -69,7 +72,11 @@ Route::middleware(['auth'])->group(function () {
 
     // Toggle like for a post
     Route::post('/subpage/{slug}/post/{postSlug}/toggle-like', [PostController::class, 'toggleLike'])->name('posts.like.toggle');  // toggle like for a post - working
-
+    
+    // Toggle dislike for a post
+    Route::post('/subpages/{slug}/posts/{post_slug}/toggle-dislike', [PostController::class, 'toggleDislike'])
+    ->name('posts.toggleDislike');
+    
     // Delete a post
     Route::delete('/subpages/{slug}/postDelete/{postSlug}', [PostController::class, 'destroy'])->name('subpages.posts.destroy'); // delete a post - working
 
@@ -81,6 +88,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Delete comment
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+
+    Route::get('/load-more-posts', 'PostController@loadMore')->name('load.more.posts');
 
 
 });
